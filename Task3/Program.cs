@@ -1,2 +1,7 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿
+using System;
+using System.IO;
+using System.Collections;
+
+string dirName = "E:/TestFolder";
+

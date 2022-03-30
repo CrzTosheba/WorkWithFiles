@@ -6,23 +6,65 @@ class Calculate
 
 {
 
+    enum LogLevel
+    {
+        Info,
+        Warning,
+        Error,
+    }
 
-    static public void Main()
+    private static void Log(LogLevel lvl, string msg) // все тоже логирование
+        => Console.WriteLine("{0} | {1} | {2}",
+            DateTime.Now,
+            lvl,
+            msg
+        );
+    static public void Main(string[] args)
     {
 
+        if (args.Length > 0)
+        {
+            foreach (string arg in args)
+                Log(LogLevel.Info, $"Size {arg} = {TryCalcDir(arg)}");
+        }
+        else
+        {
+            Log(LogLevel.Warning, "В аргументах командной строки не указан путь к директории");
+
+
+            string str = "";
+            while (string.IsNullOrWhiteSpace(str))
+            {
+                Console.WriteLine("Введите адрес директории для подсчета");
+                str = Console.ReadLine();
+                if (str == "-q")
+                    return;
+                Log(LogLevel.Info, $"Size {str} = {TryCalcDir(str)}");
+                str = "";
+            }
+
+        }
+    }
+
+    static private long TryCalcDir(string arg)
+    {
         try
         {
-            DirectoryInfo folder = new DirectoryInfo("E:/TestFolder"); // идем в папку, ну как идем, попутно проверяем есть ли она
+            if (string.IsNullOrWhiteSpace(arg))
+                throw new ArgumentException($"Путь к директории не указан");
+            if (!Directory.Exists(arg))
+                throw new ArgumentException($"Директория {arg} не существует");
 
+            DirectoryInfo folder = new DirectoryInfo(arg); // идем в папку, ну как идем, попутно проверяем есть ли она
 
             long totalFolderSize = folderSize(folder);
 
-            Console.WriteLine("Размер, байт: " +
-                              totalFolderSize);
+            return totalFolderSize;
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.Message);
+            Log(LogLevel.Error, $"Не удалось посчитать директорию\n{e.Message}");
+            return -1;
         }
     }
 
